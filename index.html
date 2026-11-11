@@ -737,7 +737,8 @@
         2: "Masukkan jumlah Murid Aktif selama tiga bulan terakhir. Periksa kembali angka yang diisi.",
         3: "Pilih RB dan KTR yang sedang berlaku saat ini. Semangat, sedikit lagi!",
         4: "Tentukan usulan penyesuaian dan rekomendasi sesuai arahan yang berlaku.",
-        5: "Periksa ringkasan pengajuan sebelum dikirim. Pastikan tidak ada data yang keliru."
+        5: "Periksa ringkasan pengajuan sebelum dikirim. Pastikan tidak ada data yang keliru.",
+        success: "Selamat! Pengajuan KTR Anda sudah selesai dan berhasil dikirim. Terima kasih, Relawan biMBA. Tetap semangat dan terus belajar! 🎉"
       };
       const bubble = document.getElementById('mascotMessage');
       if (bubble) {
@@ -904,6 +905,7 @@
       document.getElementById('submissionIdDisplay').innerText = id;
       document.getElementById('relawanSuccessDisplay').innerText = `${rel} (${unit})`;
       document.getElementById('stage-success').style.display = 'block';
+      updateMascotMessage('success');
     }
 
     function resetToNewSubmission() {
