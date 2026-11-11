@@ -507,26 +507,20 @@
       toggleCombobox(false);
     }
 
-    function fetchUnitList() {
+    async function fetchUnitList() {
       try {
-        const el = document.getElementById('serverUnitData');
-        if (el && el.textContent.trim()) {
-          const list = JSON.parse(el.textContent.trim());
-          if (Array.isArray(list) && list.length) {
-            allMasterUnits = list;
-            renderComboboxItems(allMasterUnits);
-            return;
-          }
+        const response = await fetch('/api/units', { headers: { 'Accept': 'application/json' } });
+        const result = await response.json();
+        if (!response.ok || !result.success || !Array.isArray(result.units)) {
+          throw new Error(result.message || 'Daftar unit tidak dapat dimuat.');
         }
-      } catch(e) {}
-
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run.withSuccessHandler(res => {
-          if (res && res.length) {
-            allMasterUnits = res;
-            renderComboboxItems(allMasterUnits);
-          }
-        }).getUnitList();
+        allMasterUnits = result.units;
+        renderComboboxItems(allMasterUnits);
+      } catch (error) {
+        allMasterUnits = [];
+        renderComboboxItems([]);
+        console.error('Gagal mengambil Data Unit:', error);
+        showSubmissionError('Daftar unit belum dapat dimuat. Silakan muat ulang halaman atau hubungi admin.');
       }
     }
 
@@ -671,33 +665,25 @@
       }
     }
 
-    function submitFormFinal() {
+    async function submitFormFinal() {
       const btn = document.getElementById('btnNext');
       btn.disabled = true;
       showLoader(true, "Mengirim pengajuan KTR...");
-
-      if (typeof google === 'undefined' || !google.script || !google.script.run) {
+      try {
+        const response = await fetch('/api/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        const result = await response.json();
+        showLoader(false);
+        if (!response.ok || !result.success) throw new Error(result.message || 'Gagal menyimpan pengajuan.');
+        showSuccessView(result.submissionId, result.relawanName, result.unitName);
+      } catch (error) {
         showLoader(false);
         btn.disabled = false;
-        showSubmissionError("Form harus dibuka melalui URL Web App Apps Script yang aktif.");
-        return;
+        showSubmissionError(error.message || 'Koneksi terputus. Silakan coba kembali.');
       }
-      google.script.run
-          .withSuccessHandler(res => {
-            showLoader(false);
-            if (res && res.success) {
-              showSuccessView(res.submissionId, res.relawanName, res.unitName);
-            } else {
-              btn.disabled = false;
-              showSubmissionError((res && res.error) ? res.error : "Gagal menyimpan pengajuan.");
-            }
-          })
-          .withFailureHandler(err => {
-            showLoader(false);
-            btn.disabled = false;
-            showSubmissionError(err ? (err.message || err.toString()) : "Koneksi terputus.");
-          })
-          .submitPublicPengajuan(formData);
     }
 
     function showSubmissionError(msg) {
