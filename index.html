@@ -612,6 +612,35 @@
     // Sound feedback: dibuat dari Web Audio API, jadi tidak memerlukan file audio tambahan.
     let ktrAudioContext = null;
     let ktrSoundEnabled = true;
+    let ktrWelcomeSpoken = false;
+    const KTR_WELCOME_TEXT = 'Selamat datang, Relawan biMBA. Tetap semangat dan terus belajar!';
+
+    // Browser dapat memblokir suara otomatis sebelum ada interaksi pengguna.
+    // Karena itu sambutan dicoba saat halaman dibuka, lalu diulang saat interaksi pertama bila diblokir.
+    function speakKtrWelcome() {
+      if (!ktrSoundEnabled || ktrWelcomeSpoken || !('speechSynthesis' in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(KTR_WELCOME_TEXT);
+        utterance.lang = 'id-ID';
+        utterance.rate = 0.92;
+        utterance.pitch = 1.08;
+        utterance.volume = 1;
+        utterance.onstart = () => { ktrWelcomeSpoken = true; };
+        window.speechSynthesis.speak(utterance);
+      } catch (err) {
+        console.warn('Suara sambutan tidak dapat diputar:', err);
+      }
+    }
+
+    // Percobaan saat halaman dibuka. Jika diblokir browser, interaksi pertama akan memicunya.
+    window.addEventListener('load', () => {
+      window.setTimeout(speakKtrWelcome, 700);
+    }, { once: true });
+    document.addEventListener('pointerdown', function ktrFirstInteraction() {
+      if (!ktrWelcomeSpoken && ktrSoundEnabled) speakKtrWelcome();
+      if (ktrWelcomeSpoken) document.removeEventListener('pointerdown', ktrFirstInteraction);
+    });
 
     function getKtrAudioContext() {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -669,7 +698,13 @@
         button.title = ktrSoundEnabled ? 'Suara aktif — klik untuk mematikan' : 'Suara mati — klik untuk mengaktifkan';
       }
       if (icon) icon.className = ktrSoundEnabled ? 'fa-solid fa-volume-high text-sm' : 'fa-solid fa-volume-xmark text-sm';
-      if (ktrSoundEnabled) playNextStepSound();
+      if (ktrSoundEnabled) {
+        playNextStepSound();
+        // Jika sambutan belum sempat diputar karena autoplay diblokir, tombol suara mengaktifkannya.
+        if (!ktrWelcomeSpoken) speakKtrWelcome();
+      } else if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
     }
 
     function startQuest() {
