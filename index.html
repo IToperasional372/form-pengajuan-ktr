@@ -27,7 +27,7 @@
     /* Friendly biMBA assistant */
     .ktr-mascot {
       position: fixed; right: 22px; bottom: 22px; z-index: 35;
-      width: 300px; display: flex; flex-direction: column; align-items: center;
+      width: 190px; display: flex; flex-direction: column; align-items: center;
       pointer-events: none;
     }
     .ktr-mascot-bubble {
@@ -43,7 +43,7 @@
       border-bottom:1px solid #f3d27a; transform:rotate(45deg);
     }
     .ktr-mascot-img {
-      width: 280px; height: 340px; object-fit: contain; background: transparent; object-position: bottom;
+      width: 150px; height: 190px; object-fit: contain; background: transparent; object-position: bottom;
       filter: drop-shadow(0 12px 12px rgba(15,23,42,.18));
       animation: ktrFloat 3.4s ease-in-out infinite;
     }
@@ -52,17 +52,22 @@
     .ktr-stage-card { animation: ktrStageIn .38s ease both; }
     @keyframes ktrStageIn { from { opacity:0; transform:translateY(12px) } to { opacity:1; transform:translateY(0) } }
     .ktr-brand-glow { box-shadow:0 12px 30px rgba(128,0,0,.13), 0 3px 8px rgba(15,23,42,.05); }
+    #soundToggle:focus-visible { outline:3px solid #fcd34d; outline-offset:3px; }
+    @media (max-width:520px) {
+      header .max-w-2xl { min-height:48px; }
+      header .text-\[10px\] { letter-spacing:.04em; }
+    }
     .ktr-primary-btn { transition:transform .2s ease, box-shadow .2s ease, filter .2s ease; }
     .ktr-primary-btn:hover { transform:translateY(-2px); box-shadow:0 12px 24px rgba(128,0,0,.22); filter:brightness(1.04); }
     @media (max-width: 900px) {
-      .ktr-mascot { right:8px; bottom:4px; width:170px; opacity:.98; }
-      .ktr-mascot-img { width:160px; height:205px; }
+      .ktr-mascot { right:10px; bottom:8px; width:120px; opacity:.97; }
+      .ktr-mascot-img { width:86px; height:112px; }
       .ktr-mascot-bubble { font-size:9px; padding:7px 8px; border-radius:12px; }
       #navButtons { padding-bottom:90px; }
     }
     @media (max-width: 520px) {
-      .ktr-mascot { width:125px; right:3px; bottom:2px; }
-      .ktr-mascot-img { width:120px; height:155px; }
+      .ktr-mascot { width:100px; right:4px; bottom:2px; }
+      .ktr-mascot-img { width:72px; height:92px; }
       .ktr-mascot-bubble { font-size:8px; max-width:100px; }
     }
 
@@ -85,16 +90,23 @@
   <div id="publicFormView" class="min-h-screen">
     <!-- TOP BAR FORM RELAWAN -->
     <header class="bg-gradient-to-r from-[#800000] to-[#5a0000] text-white py-3 px-4 shadow-md sticky top-0 z-40 border-b-2 border-amber-400">
-      <div class="max-w-2xl mx-auto flex items-center justify-between">
-        <div class="flex items-center space-x-2.5">
-          <img src="https://lh3.googleusercontent.com/d/1E9HTjJw0PVEORIqBLof8ifE1RLDk-2mF" alt="biMBA" class="w-9 h-9 object-contain drop-shadow" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=biMBA&background=eff6ff&color=800000&rounded=true&size=128'">
+      <div class="max-w-2xl mx-auto flex items-center justify-between gap-3">
+        <div class="flex items-center space-x-3 min-w-0">
+          <img src="https://lh3.googleusercontent.com/d/1E9HTjJw0PVEORIqBLof8ifE1RLDk-2mF" alt="biMBA" class="w-10 h-10 object-contain drop-shadow" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=biMBA&background=eff6ff&color=800000&rounded=true&size=128'">
           <div>
             <h1 class="text-xs sm:text-sm font-black tracking-wide leading-tight">biMBA AIUEO</h1>
             <p class="text-[10px] text-amber-200 font-medium">Form Pengajuan KTR Relawan Unit</p>
           </div>
         </div>
-        <div class="text-[10px] bg-amber-400 text-red-950 font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-          Relawan Unit
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" id="soundToggle" onclick="toggleSound()" aria-label="Matikan suara" aria-pressed="true"
+            class="w-9 h-9 rounded-full border border-white/25 bg-white/10 hover:bg-white/20 text-white transition flex items-center justify-center"
+            title="Suara aktif — klik untuk mematikan">
+            <i id="soundToggleIcon" class="fa-solid fa-volume-high text-sm"></i>
+          </button>
+          <div class="text-[10px] bg-amber-400 text-red-950 font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm">
+            Relawan Unit
+          </div>
         </div>
       </div>
 
@@ -133,9 +145,9 @@
           </div>
           
           
-          <div class="flex items-center justify-center gap-4 mb-4">
+          <div class="flex items-center justify-center gap-3 mb-3">
             <img src="/mascot-wave.gif" alt="Asisten biMBA AIUEO"
-                 class="w-36 h-44 sm:w-44 sm:h-52 object-contain bg-transparent drop-shadow-xl"
+                 class="w-24 h-32 sm:w-28 sm:h-36 object-contain bg-transparent drop-shadow-xl"
                  onerror="this.style.display='none'">
             <div class="text-left max-w-xs">
               <p class="text-sm sm:text-base font-extrabold text-slate-800">Halo, Relawan! 👋</p>
@@ -597,6 +609,69 @@
       }
     }
 
+    // Sound feedback: dibuat dari Web Audio API, jadi tidak memerlukan file audio tambahan.
+    let ktrAudioContext = null;
+    let ktrSoundEnabled = true;
+
+    function getKtrAudioContext() {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return null;
+      if (!ktrAudioContext) ktrAudioContext = new AudioCtx();
+      if (ktrAudioContext.state === 'suspended') ktrAudioContext.resume().catch(() => {});
+      return ktrAudioContext;
+    }
+
+    function playKtrTone(frequency, startAt, duration, volume = 0.045, wave = 'sine') {
+      if (!ktrSoundEnabled) return;
+      const ctx = getKtrAudioContext();
+      if (!ctx) return;
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+      oscillator.type = wave;
+      oscillator.frequency.setValueAtTime(frequency, startAt);
+      gain.gain.setValueAtTime(0.0001, startAt);
+      gain.gain.exponentialRampToValueAtTime(volume, startAt + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+      oscillator.start(startAt);
+      oscillator.stop(startAt + duration + 0.02);
+    }
+
+    function playNextStepSound() {
+      if (!ktrSoundEnabled) return;
+      const ctx = getKtrAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      // Dua nada pendek yang lembut sebagai tanda berhasil lanjut.
+      playKtrTone(659.25, now, 0.12, 0.035);
+      playKtrTone(783.99, now + 0.105, 0.16, 0.04);
+    }
+
+    function playSubmissionCompleteSound() {
+      if (!ktrSoundEnabled) return;
+      const ctx = getKtrAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+      // Jingle singkat tiga nada ketika pengajuan berhasil tersimpan.
+      playKtrTone(523.25, now, 0.20, 0.045);
+      playKtrTone(659.25, now + 0.16, 0.22, 0.045);
+      playKtrTone(783.99, now + 0.34, 0.38, 0.05);
+    }
+
+    function toggleSound() {
+      ktrSoundEnabled = !ktrSoundEnabled;
+      const button = document.getElementById('soundToggle');
+      const icon = document.getElementById('soundToggleIcon');
+      if (button) {
+        button.setAttribute('aria-pressed', String(ktrSoundEnabled));
+        button.setAttribute('aria-label', ktrSoundEnabled ? 'Matikan suara' : 'Aktifkan suara');
+        button.title = ktrSoundEnabled ? 'Suara aktif — klik untuk mematikan' : 'Suara mati — klik untuk mengaktifkan';
+      }
+      if (icon) icon.className = ktrSoundEnabled ? 'fa-solid fa-volume-high text-sm' : 'fa-solid fa-volume-xmark text-sm';
+      if (ktrSoundEnabled) playNextStepSound();
+    }
+
     function startQuest() {
       document.getElementById('stage-0').style.display = 'none';
       document.getElementById('progressContainer').style.display = 'block';
@@ -679,6 +754,7 @@
           if (currentStage === totalStages) {
             submitFormFinal();
           } else {
+            playNextStepSound();
             goToStage(currentStage + 1);
           }
         }
@@ -786,6 +862,7 @@
     }
 
     function showSuccessView(id, rel, unit) {
+      playSubmissionCompleteSound();
       document.getElementById('questForm').style.display = 'none';
       document.getElementById('progressContainer').style.display = 'none';
       document.getElementById('navButtons').style.display = 'none';
