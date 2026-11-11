@@ -34,7 +34,10 @@
       width: 100%; background: rgba(255,255,255,.97); color: #24324b;
       border: 1px solid #f3d27a; border-radius: 18px; padding: 11px 13px;
       box-shadow: 0 12px 35px rgba(15,23,42,.16); font-size: 11px;
-      line-height: 1.55; text-align: center; position: relative; margin-bottom: 4px;
+      line-height: 1.55; text-align: center; position: relative;
+      margin-bottom: 4px; z-index: 2;
+      /* Turunkan bubble ke area transparan gambar agar dekat dengan kepala maskot. */
+      transform: translateY(48px);
       animation: ktrBubbleIn .55s ease both;
     }
     .ktr-mascot-bubble:after {
@@ -62,13 +65,13 @@
     @media (max-width: 900px) {
       .ktr-mascot { right:12px; bottom:10px; width:180px; opacity:.97; }
       .ktr-mascot-img { width:150px; height:190px; }
-      .ktr-mascot-bubble { font-size:9px; padding:7px 8px; border-radius:12px; }
+      .ktr-mascot-bubble { font-size:9px; padding:7px 8px; border-radius:12px; transform:translateY(34px); }
       #navButtons { padding-bottom:90px; }
     }
     @media (max-width: 520px) {
       .ktr-mascot { width:130px; right:6px; bottom:4px; }
       .ktr-mascot-img { width:110px; height:140px; }
-      .ktr-mascot-bubble { font-size:8px; max-width:100px; }
+      .ktr-mascot-bubble { font-size:8px; max-width:100px; transform:translateY(24px); }
     }
 
 
@@ -150,8 +153,8 @@
                  class="w-36 h-44 sm:w-40 sm:h-48 object-contain bg-transparent drop-shadow-xl"
                  onerror="this.style.display='none'">
             <div class="text-left max-w-xs">
-              <p class="text-sm sm:text-base font-extrabold text-slate-800">Halo, Relawan! 👋</p>
-              <p class="text-xs text-slate-500 leading-relaxed">Saya siap menemani Anda mengisi pengajuan Kartu Tanda Relawan.</p>
+              <p class="text-sm sm:text-base font-extrabold text-slate-800">Halo, Sahabat Relawan! 👋</p>
+              <p class="text-xs text-slate-500 leading-relaxed">Saya siap menemani Anda mengisi form pengajuan KTR dari awal hingga selesai.</p>
               <span class="inline-flex mt-2 text-[10px] font-bold text-[#800000] bg-amber-100 border border-amber-200 rounded-full px-3 py-1">Mudah • Bertahap • Praktis</span>
             </div>
           </div>
