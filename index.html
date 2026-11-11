@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Pengajuan KTR Relawan Unit - biMBA AIUEO</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .loader {
+      border: 4px solid #f3f3f3; border-top: 4px solid #800000; border-radius: 50%;
+      width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 20px auto;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-amber-300 selection:text-red-900 min-h-screen pb-12">
+
+  <script id="serverUnitData" type="application/json">
+    <?!= (typeof initialUnits !== 'undefined' && initialUnits) ? JSON.stringify(initialUnits) : '[]' ?>
+  </script>
+
+  <!-- FORMULIR PENGAJUAN MURNI UNTUK RELAWAN UNIT -->
+  <div id="publicFormView" class="min-h-screen">
+    <!-- TOP BAR FORM RELAWAN -->
+    <header class="bg-gradient-to-r from-[#800000] to-[#5a0000] text-white py-3 px-4 shadow-md sticky top-0 z-40 border-b-2 border-amber-400">
+      <div class="max-w-2xl mx-auto flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <img src="https://lh3.googleusercontent.com/d/1E9HTjJw0PVEORIqBLof8ifE1RLDk-2mF" alt="biMBA" class="w-9 h-9 object-contain drop-shadow" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=biMBA&background=eff6ff&color=800000&rounded=true&size=128'">
+          <div>
+            <h1 class="text-xs sm:text-sm font-black tracking-wide leading-tight">biMBA AIUEO</h1>
+            <p class="text-[10px] text-amber-200 font-medium">Form Pengajuan KTR Relawan Unit</p>
+          </div>
+        </div>
+        <div class="text-[10px] bg-amber-400 text-red-950 font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+          Relawan Unit
+        </div>
+      </div>
+
+      <!-- PROGRESS BAR FORM -->
+      <div id="progressContainer" class="max-w-2xl mx-auto mt-2 pt-2 border-t border-white/10" style="display: none;">
+        <div class="flex justify-between items-center text-[11px] font-semibold text-amber-200 mb-1">
+          <span id="currentStageTitle">Tahap 1: Unit & Relawan</span>
+          <span id="progressPercentage" class="bg-amber-400 text-red-950 px-2 py-0.5 rounded-full font-bold">0%</span>
+        </div>
+        <div class="w-full bg-black/30 rounded-full h-2 p-0.5 overflow-hidden">
+          <div id="progressBar" class="bg-gradient-to-r from-amber-400 to-amber-200 h-1 rounded-full transition-all duration-300 w-0"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4 mt-6">
+      
+      <!-- STAGE 0: HERO / PENJELASAN -->
+      <section id="stage-0">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-xl text-center border-t-8 border-[#800000] border-x border-b border-slate-200">
+          <div class="flex justify-center mb-4">
+            <div class="w-28 h-28 flex items-center justify-center">
+              <img src="https://lh3.googleusercontent.com/d/1E9HTjJw0PVEORIqBLof8ifE1RLDk-2mF" alt="biMBA" class="w-full h-full object-contain drop-shadow" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=biMBA&background=eff6ff&color=800000&rounded=true&size=128'">
+            </div>
+          </div>
+          
+          <h2 class="text-xl sm:text-2xl font-black text-[#800000] mb-2 tracking-wide leading-tight uppercase">
+            FORM PENGAJUAN KTR RELAWAN UNIT
+          </h2>
+          
+          <p class="text-xs sm:text-sm font-semibold text-amber-300 bg-[#800000] py-2 px-4 rounded-xl mb-4 italic shadow-inner">
+            Yayasan Pengembangan Anak Indonesia — biMBA AIUEO
+          </p>
+
+          <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200 mb-6 text-left text-xs text-slate-700 leading-relaxed space-y-1.5">
+            <p class="font-bold text-amber-900">Petunjuk Pengisian:</p>
+            <ul class="list-disc pl-4 space-y-1">
+              <li>Pilih nama unit biMBA tempat Anda bertugas.</li>
+              <li>Lengkapi data diri relawan dan tanggal masuk.</li>
+              <li>Masukkan data jumlah murid aktif (MA) selama 3 bulan terakhir.</li>
+              <li>Pilih RB & KTR saat ini serta usulan penyesuaian yang diajukan.</li>
+            </ul>
+          </div>
+
+          <button id="btnStartQuest" type="button" class="w-full py-4 bg-gradient-to-r from-[#800000] to-[#5a0000] text-white font-extrabold text-base sm:text-lg rounded-2xl shadow-xl hover:opacity-95 active:scale-95 transition-all border-2 border-amber-400 cursor-pointer">
+            🚀 MULAI PENGAJUAN KTR
+          </button>
+        </div>
+      </section>
+
+      <!-- FORM STAGES (1 - 5) -->
+      <div id="questForm" class="space-y-4">
+        
+        <!-- TAHAP 1 -->
+        <section id="stage-1" style="display: none;">
+          <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-[#800000] border-x border-b border-slate-200 space-y-4">
+            <div class="flex items-center space-x-2 border-b pb-3">
+              <span class="text-2xl">👤</span>
+              <div>
+                <span class="text-[10px] font-bold text-[#800000] uppercase tracking-wider block">Tahap 1 / 5</span>
+                <h3 class="font-bold text-base sm:text-lg text-slate-800">Unit & Data Diri Relawan</h3>
+              </div>
+            </div>
+
+            <!-- Nama Unit (Searchable) -->
+            <div class="space-y-2">
+              <label class="block text-xs font-bold text-slate-700 uppercase">
+                1. Nama Unit biMBA <span class="text-red-500">*</span>
+              </label>
+              <input type="hidden" id="unitName" value="">
+              
+              <div class="relative" id="comboboxWrapper">
+                <button type="button" id="comboboxTrigger" class="w-full p-3.5 bg-slate-50 border-2 border-slate-300 hover:border-[#800000] rounded-xl text-left flex items-center justify-between text-sm transition focus:ring-2 focus:ring-[#800000] shadow-sm cursor-pointer">
+                  <span id="comboboxSelectedText" class="truncate font-semibold text-slate-400">-- Pilih Nama Unit biMBA --</span>
+                  <span id="comboboxArrow" class="text-xs text-slate-500">▼</span>
+                </button>
+
+                <div id="comboboxPanel" class="hidden absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border-2 border-amber-300 z-50 p-3 space-y-2.5">
+                  <div class="relative">
+                    <span class="absolute left-3 top-2.5 text-xs text-slate-400">🔍</span>
+                    <input type="text" id="comboboxSearchInput" placeholder="Ketik nama unit..." class="w-full pl-8 pr-3 py-2 bg-slate-50 border rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-[#800000]">
+                  </div>
+                  <div id="comboboxOptionsContainer" class="max-h-56 overflow-y-auto space-y-1 custom-scroll pr-1"></div>
+                </div>
+              </div>
+              <p id="err-unitName" class="hidden text-xs font-semibold text-red-500 mt-1">❌ Nama unit wajib dipilih.</p>
+            </div>
+
+            <!-- Nama Lengkap Relawan -->
+            <div class="space-y-1 pt-2">
+              <label for="relawanName" class="block text-xs font-bold text-slate-700 uppercase">
+                2. Nama Lengkap Relawan <span class="text-red-500">*</span>
+              </label>
+              <input type="text" id="relawanName" placeholder="Masukkan nama lengkap relawan..." class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#800000]">
+              <p id="err-relawanName" class="hidden text-xs font-semibold text-red-500">❌ Nama relawan wajib diisi.</p>
+            </div>
+
+            <!-- Jabatan -->
+            <div class="space-y-1 pt-2">
+              <label for="jabatan" class="block text-xs font-bold text-slate-700 uppercase">
+                3. Jabatan <span class="text-red-500">*</span>
+              </label>
+              <select id="jabatan" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#800000]">
+                <option value="">-- Pilih Jabatan Relawan --</option>
+                <option value="Relawan Administrasi Unit (Kepala Unit)">Relawan Administrasi Unit (Kepala Unit)</option>
+                <option value="Relawan Administrasi Unit (Asisten Kepala Unit)">Relawan Administrasi Unit (Asisten Kepala Unit)</option>
+                <option value="Relawan Guru">Relawan Guru</option>
+                <option value="Relawan Umum (Security)">Relawan Umum (Security)</option>
+                <option value="Relawan Umum (OB/OG)">Relawan Umum (OB/OG)</option>
+              </select>
+              <p id="err-jabatan" class="hidden text-xs font-semibold text-red-500">❌ Jabatan wajib dipilih.</p>
+            </div>
+
+            <!-- Tanggal Masuk -->
+            <div class="space-y-1 pt-2">
+              <label for="tglMasuk" class="block text-xs font-bold text-slate-700 uppercase">
+                4. Tanggal Masuk di biMBA <span class="text-red-500">*</span>
+              </label>
+              <input type="date" id="tglMasuk" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#800000]">
+              <p id="err-tglMasuk" class="hidden text-xs font-semibold text-red-500">❌ Tanggal masuk wajib diisi.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAHAP 2 -->
+        <section id="stage-2" style="display: none;">
+          <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-[#800000] border-x border-b border-slate-200 space-y-4">
+            <div class="flex items-center space-x-2 border-b pb-3">
+              <span class="text-2xl">📊</span>
+              <div>
+                <span class="text-[10px] font-bold text-[#800000] uppercase tracking-wider block">Tahap 2 / 5</span>
+                <h3 class="font-bold text-base sm:text-lg text-slate-800">Jumlah Murid 3 Bulan Terakhir</h3>
+              </div>
+            </div>
+
+            <!-- Bulan 1 -->
+            <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 space-y-2">
+              <span class="text-xs font-bold text-[#800000] uppercase tracking-wide block">Bulan Pertama</span>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-600 uppercase">Tahun *</label>
+                  <select id="m1Tahun" class="w-full p-2 bg-white border rounded-lg text-xs font-semibold"><option value="2026" selected>2026</option><option value="2025">2025</option></select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-600 uppercase">Bulan *</label>
+                  <select id="m1Bulan" class="w-full p-2 bg-white border rounded-lg text-xs font-semibold">
+                    <option value="Februari">Februari</option><option value="Maret">Maret</option><option value="April">April</option><option value="Januari">Januari</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase">Jumlah Murid Aktif | MA *</label>
+                <input type="number" id="m1Murid" min="0" placeholder="Contoh: 85" class="w-full p-2.5 bg-white border rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-[#800000]">
+              </div>
+            </div>
+
+            <!-- Bulan 2 -->
+            <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 space-y-2">
+              <span class="text-xs font-bold text-[#800000] uppercase tracking-wide block">Bulan Kedua</span>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-600 uppercase">Tahun *</label>
+                  <select id="m2Tahun" class="w-full p-2 bg-white border rounded-lg text-xs font-semibold"><option value="2026" selected>2026</option><option value="2025">2025</option></select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-600 uppercase">Bulan *</label>
+                  <select id="m2Bulan" class="w-full p-2 bg-white border rounded-lg text-xs font-semibold">
+                    <option value="Maret" selected>Maret</option><option value="Februari">Februari</option><option value="April">April</option><option value="Januari">Januari</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase">Jumlah Murid Aktif | MA *</label>
+                <input type="number" id="m2Murid" min="0" placeholder="Contoh: 90" class="w-full p-2.5 bg-white border rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-[#800000]">
+              </div>
+            </div>
+
+            <!-- Bulan 3 -->
+            <div class="p-3 bg-amber-50/60 rounded-xl border border-amber-200 space-y-2">
+              <span class="text-xs font-bold text-[#800000] uppercase tracking-wide block">Bulan Ketiga</span>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-600 uppercase">Tahun *</label>
+                  <select id="m3Tahun" class="w-full p-2 bg-white border rounded-lg text-xs font-semibold"><option value="2026" selected>2026</option><option value="2025">2025</option></select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-600 uppercase">Bulan *</label>
+                  <select id="m3Bulan" class="w-full p-2 bg-white border rounded-lg text-xs font-semibold">
+                    <option value="April" selected>April</option><option value="Februari">Februari</option><option value="Maret">Maret</option><option value="Januari">Januari</option><option value="Mei">Mei</option><option value="Juni">Juni</option><option value="Juli">Juli</option><option value="Agustus">Agustus</option><option value="September">September</option><option value="Oktober">Oktober</option><option value="November">November</option><option value="Desember">Desember</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-600 uppercase">Jumlah Murid Aktif | MA *</label>
+                <input type="number" id="m3Murid" min="0" placeholder="Contoh: 95" class="w-full p-2.5 bg-white border rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-[#800000]">
+              </div>
+            </div>
+
+            <p id="err-murid" class="hidden text-xs font-semibold text-red-500">❌ Seluruh murid aktif 3 bulan terakhir wajib diisi angka.</p>
+          </div>
+        </section>
+
+        <!-- TAHAP 3 -->
+        <section id="stage-3" style="display: none;">
+          <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-[#800000] border-x border-b border-slate-200 space-y-4">
+            <div class="flex items-center space-x-2 border-b pb-3">
+              <span class="text-2xl">📋</span>
+              <div>
+                <span class="text-[10px] font-bold text-[#800000] uppercase tracking-wider block">Tahap 3 / 5</span>
+                <h3 class="font-bold text-base sm:text-lg text-slate-800">RB & KTR Saat Ini</h3>
+              </div>
+            </div>
+
+            <div>
+              <label for="rbSaatIni" class="block text-xs font-bold text-slate-700 uppercase">14. RB Saat Ini *</label>
+              <select id="rbSaatIni" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-[#800000]">
+                <option value="">-- Pilih RB Saat Ini --</option>
+                <option value="RB05">RB05</option><option value="RB08">RB08</option><option value="RB10">RB10</option><option value="RB15">RB15</option>
+                <option value="RB20P">RB20P</option><option value="RB20S">RB20S</option><option value="RB20M">RB20M</option><option value="RB25">RB25</option>
+                <option value="RB30">RB30</option><option value="RB35">RB35</option><option value="RB40">RB40</option><option value="RB45">RB45</option>
+                <option value="RB50">RB50</option><option value="RB55">RB55</option><option value="RB60">RB60</option><option value="RBT">RBT</option>
+              </select>
+              <p id="err-rbSaatIni" class="hidden text-xs font-semibold text-red-500">❌ RB saat ini wajib dipilih.</p>
+            </div>
+
+            <div class="pt-2">
+              <label for="ktrSaatIni" class="block text-xs font-bold text-slate-700 uppercase">15. KTR Saat Ini *</label>
+              <select id="ktrSaatIni" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-[#800000] max-h-48"></select>
+              <p id="err-ktrSaatIni" class="hidden text-xs font-semibold text-red-500">❌ KTR saat ini wajib dipilih.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAHAP 4 -->
+        <section id="stage-4" style="display: none;">
+          <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-[#800000] border-x border-b border-slate-200 space-y-4">
+            <div class="flex items-center space-x-2 border-b pb-3">
+              <span class="text-2xl">🎯</span>
+              <div>
+                <span class="text-[10px] font-bold text-[#800000] uppercase tracking-wider block">Tahap 4 / 5</span>
+                <h3 class="font-bold text-base sm:text-lg text-slate-800">Pengajuan Penyesuaian & Rekomendasi</h3>
+              </div>
+            </div>
+
+            <div>
+              <label for="pengajuanRb" class="block text-xs font-bold text-slate-700 uppercase">16. Pengajuan Penyesuaian RB *</label>
+              <select id="pengajuanRb" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-[#800000]">
+                <option value="">-- Pilih Penyesuaian RB --</option>
+                <option value="RB05">RB05</option><option value="RB08">RB08</option><option value="RB10">RB10</option><option value="RB15">RB15</option>
+                <option value="RB20P">RB20P</option><option value="RB20S">RB20S</option><option value="RB20M">RB20M</option><option value="RB25">RB25</option>
+                <option value="RB30">RB30</option><option value="RB35">RB35</option><option value="RB40">RB40</option><option value="RB45">RB45</option>
+                <option value="RB50">RB50</option><option value="RB55">RB55</option><option value="RB60">RB60</option><option value="RBT">RBT</option>
+              </select>
+              <p id="err-pengajuanRb" class="hidden text-xs font-semibold text-red-500">❌ Penyesuaian RB wajib dipilih.</p>
+            </div>
+
+            <div class="pt-2">
+              <label for="pengajuanKtr" class="block text-xs font-bold text-slate-700 uppercase">17. Pengajuan Penyesuaian KTR *</label>
+              <select id="pengajuanKtr" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-bold outline-none focus:ring-2 focus:ring-[#800000] max-h-48"></select>
+              <p id="err-pengajuanKtr" class="hidden text-xs font-semibold text-red-500">❌ Penyesuaian KTR wajib dipilih.</p>
+            </div>
+
+            <div class="pt-2">
+              <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">18. Rekomendasi *</label>
+              <div class="grid grid-cols-2 gap-3">
+                <label class="flex items-center gap-2 p-3 bg-slate-50 border rounded-xl cursor-pointer hover:bg-amber-50">
+                  <input type="radio" name="rekomendasi" value="Koornit" checked class="text-[#800000]">
+                  <span class="text-xs font-bold">Koornit</span>
+                </label>
+                <label class="flex items-center gap-2 p-3 bg-slate-50 border rounded-xl cursor-pointer hover:bg-amber-50">
+                  <input type="radio" name="rekomendasi" value="Kepala Unit" class="text-[#800000]">
+                  <span class="text-xs font-bold">Kepala Unit</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAHAP 5 -->
+        <section id="stage-5" style="display: none;">
+          <div class="bg-white rounded-2xl p-6 shadow-md border-t-4 border-[#800000] border-x border-b border-slate-200 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="text-2xl">🔎</span>
+                <div>
+                  <span class="text-[10px] font-bold text-[#800000] uppercase tracking-wider block">Tahap 5 / 5</span>
+                  <h3 class="font-bold text-base sm:text-lg text-slate-800">Review Data Pengajuan</h3>
+                </div>
+              </div>
+              <button type="button" onclick="goToStage(1)" class="text-xs font-bold text-[#800000] hover:underline flex items-center gap-1 cursor-pointer">
+                ✏️ Ubah Data
+              </button>
+            </div>
+
+            <div id="reviewContent" class="space-y-2 text-xs"></div>
+
+            <div id="submissionErrorBox" class="hidden bg-red-50 border-2 border-red-300 text-red-800 p-3 rounded-xl text-xs">
+              <p class="font-bold">❌ Gagal Mengirim:</p>
+              <p id="submissionErrorText" class="mt-0.5 text-[11px]"></p>
+            </div>
+
+            <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200 text-slate-700 text-[11px] font-medium leading-relaxed">
+              ⚠️ <b>Pernyataan:</b> Data yang diinputkan akan diverifikasi oleh personalia dan kordinator unit. Pastikan keakuratan data murid aktif dan KTR sebelum mengirim.
+            </div>
+          </div>
+        </section>
+
+        <!-- NAVIGATION -->
+        <div id="navButtons" class="flex justify-between gap-3 pt-2" style="display: none;">
+          <button type="button" id="btnPrev" class="w-1/3 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-sm transition cursor-pointer">
+            ← Kembali
+          </button>
+          <button type="button" id="btnNext" class="w-2/3 py-3 bg-[#800000] hover:bg-[#5a0000] text-white font-bold rounded-xl shadow-lg text-sm transition flex items-center justify-center gap-1.5 cursor-pointer">
+            <span>Lanjut</span> →
+          </button>
+        </div>
+      </div>
+
+      <!-- SUCCESS SCREEN -->
+      <section id="stage-success" style="display: none;">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl text-center border-t-8 border-emerald-600 border-x border-b border-slate-200 space-y-5">
+          <div class="flex justify-center">
+            <div class="w-20 h-20 flex items-center justify-center">
+              <img src="https://lh3.googleusercontent.com/d/1E9HTjJw0PVEORIqBLof8ifE1RLDk-2mF" alt="biMBA" class="w-full h-full object-contain drop-shadow" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=biMBA&background=eff6ff&color=800000&rounded=true&size=128'">
+            </div>
+          </div>
+          <div>
+            <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold rounded-full mb-1">Status: DIAJUKAN (PENDING)</span>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-800">PENGAJUAN BERHASIL TERCATAT</h2>
+            <p class="text-xs text-slate-600 mt-1">Pengajuan KTR relawan Anda telah tersimpan di sistem Google Sheets.</p>
+          </div>
+          <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200">
+            <p class="text-[11px] text-amber-800 font-bold uppercase tracking-wider mb-0.5">Nomor Pengajuan</p>
+            <p id="submissionIdDisplay" class="font-mono text-2xl font-black text-[#800000] tracking-wider">-</p>
+            <p id="relawanSuccessDisplay" class="text-xs font-semibold text-slate-700 mt-1"></p>
+          </div>
+          <button type="button" onclick="resetToNewSubmission()" class="w-full py-3.5 bg-[#800000] hover:bg-[#5a0000] text-white font-bold text-sm rounded-xl shadow-lg border border-amber-400 transition cursor-pointer">
+            🏠 Buat Pengajuan Baru
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- GLOBAL LOADER -->
+  <div id="globalLoader" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] flex flex-col items-center justify-center hidden">
+    <div class="loader"></div>
+    <p class="text-amber-200 font-bold text-xs mt-2" id="loadingText">Memproses Data...</p>
+  </div>
+
+  <script>
+    const KTR_OPTIONS = [];
+    for (let num = 1; num <= 20; num++) {
+      KTR_OPTIONS.push(`KTR ${num}A`, `KTR ${num}B`);
+    }
+
+    function populateKtrSelects() {
+      ['ktrSaatIni', 'pengajuanKtr'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = '<option value="">-- Pilih KTR --</option>' + 
+          KTR_OPTIONS.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+      });
+    }
+
+    let currentStage = 0;
+    const totalStages = 5;
+    let allMasterUnits = [];
+    let isComboboxOpen = false;
+
+    let formData = {
+      unitName: "", relawanName: "", jabatan: "", tglMasuk: "",
+      m1Tahun: "2026", m1Bulan: "Februari", m1Murid: "",
+      m2Tahun: "2026", m2Bulan: "Maret", m2Murid: "",
+      m3Tahun: "2026", m3Bulan: "April", m3Murid: "",
+      rbSaatIni: "", ktrSaatIni: "", pengajuanRb: "", pengajuanKtr: "", rekomendasi: "Koornit"
+    };
+
+    window.onload = function() {
+      populateKtrSelects();
+      initSearchableCombobox();
+      fetchUnitList();
+
+      const startBtn = document.getElementById('btnStartQuest');
+      if (startBtn) startBtn.onclick = startQuest;
+      const nextBtn = document.getElementById('btnNext');
+      if (nextBtn) nextBtn.onclick = () => navigateStep(1);
+      const prevBtn = document.getElementById('btnPrev');
+      if (prevBtn) prevBtn.onclick = () => navigateStep(-1);
+    };
+
+    function initSearchableCombobox() {
+      const trigger = document.getElementById('comboboxTrigger');
+      const panel = document.getElementById('comboboxPanel');
+      const searchInput = document.getElementById('comboboxSearchInput');
+
+      if (!trigger) return;
+      trigger.onclick = e => { e.stopPropagation(); toggleCombobox(!isComboboxOpen); };
+      panel.onclick = e => e.stopPropagation();
+      document.addEventListener('click', () => { if (isComboboxOpen) toggleCombobox(false); });
+      searchInput.oninput = function() { filterComboboxItems(this.value.trim().toLowerCase()); };
+    }
+
+    function toggleCombobox(open) {
+      isComboboxOpen = open;
+      const panel = document.getElementById('comboboxPanel');
+      const arrow = document.getElementById('comboboxArrow');
+      const searchInput = document.getElementById('comboboxSearchInput');
+      if (open) {
+        panel.classList.remove('hidden');
+        arrow.style.transform = 'rotate(180deg)';
+        searchInput.value = '';
+        filterComboboxItems('');
+        setTimeout(() => searchInput.focus(), 100);
+      } else {
+        panel.classList.add('hidden');
+        arrow.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    function renderComboboxItems(units) {
+      const container = document.getElementById('comboboxOptionsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      if (!units || !units.length) {
+        container.innerHTML = '<div class="p-3 text-center text-xs text-slate-400">Unit tidak ditemukan.</div>';
+        return;
+      }
+      const cur = document.getElementById('unitName').value;
+      units.forEach(u => {
+        const item = document.createElement('div');
+        const isSel = (u === cur);
+        item.className = `p-2.5 rounded-xl cursor-pointer text-xs font-medium flex justify-between ${isSel ? 'bg-amber-100 text-[#800000] font-bold' : 'hover:bg-slate-100 text-slate-700'}`;
+        const label = document.createElement('span');
+        label.textContent = u;
+        item.appendChild(label);
+        if (isSel) {
+          const check = document.createElement('span');
+          check.className = 'font-black text-[#800000]';
+          check.textContent = '✓';
+          item.appendChild(check);
+        }
+        item.onclick = () => selectComboboxUnit(u);
+        container.appendChild(item);
+      });
+    }
+
+    function filterComboboxItems(kw) {
+      const filtered = kw ? allMasterUnits.filter(u => u.toLowerCase().includes(kw)) : allMasterUnits;
+      renderComboboxItems(filtered);
+    }
+
+    function selectComboboxUnit(u) {
+      formData.unitName = u;
+      document.getElementById('unitName').value = u;
+      const label = document.getElementById('comboboxSelectedText');
+      label.innerText = u;
+      label.className = "truncate font-bold text-[#800000] text-sm";
+      document.getElementById('err-unitName').classList.add('hidden');
+      toggleCombobox(false);
+    }
+
+    function fetchUnitList() {
+      try {
+        const el = document.getElementById('serverUnitData');
+        if (el && el.textContent.trim()) {
+          const list = JSON.parse(el.textContent.trim());
+          if (Array.isArray(list) && list.length) {
+            allMasterUnits = list;
+            renderComboboxItems(allMasterUnits);
+            return;
+          }
+        }
+      } catch(e) {}
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(res => {
+          if (res && res.length) {
+            allMasterUnits = res;
+            renderComboboxItems(allMasterUnits);
+          }
+        }).getUnitList();
+      }
+    }
+
+    function startQuest() {
+      document.getElementById('stage-0').style.display = 'none';
+      document.getElementById('progressContainer').style.display = 'block';
+      document.getElementById('navButtons').style.display = 'flex';
+      goToStage(1);
+    }
+
+    function goToStage(num) {
+      for (let i = 1; i <= totalStages; i++) {
+        const el = document.getElementById(`stage-${i}`);
+        if (el) el.style.display = 'none';
+      }
+      currentStage = num;
+      const target = document.getElementById(`stage-${currentStage}`);
+      if (target) target.style.display = 'block';
+
+      updateProgress();
+      if (currentStage === 5) renderReviewData();
+      window.scrollTo(0, 0);
+    }
+
+    function updateProgress() {
+      const pct = Math.round(((currentStage - 1) / (totalStages - 1)) * 100);
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressPercentage').innerText = pct + '%';
+
+      const titles = [
+        "",
+        "Tahap 1: Unit & Data Diri Relawan",
+        "Tahap 2: Jumlah Murid 3 Bulan Terakhir",
+        "Tahap 3: RB & KTR Saat Ini",
+        "Tahap 4: Pengajuan Penyesuaian & Rekomendasi",
+        "Tahap 5: Review & Kirim Pengajuan"
+      ];
+      document.getElementById('currentStageTitle').innerText = titles[currentStage] || '';
+
+      const nextBtn = document.getElementById('btnNext');
+      if (currentStage === totalStages) {
+        nextBtn.innerHTML = "<span>🚀 KIRIM PENGAJUAN</span>";
+        nextBtn.className = "w-2/3 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg text-sm transition flex items-center justify-center gap-1.5 cursor-pointer";
+      } else {
+        nextBtn.innerHTML = "<span>Lanjut</span> →";
+        nextBtn.className = "w-2/3 py-3 bg-[#800000] hover:bg-[#5a0000] text-white font-bold rounded-xl shadow-lg text-sm transition flex items-center justify-center gap-1.5 cursor-pointer";
+      }
+    }
+
+    function navigateStep(dir) {
+      if (dir === -1) {
+        if (currentStage === 1) {
+          document.getElementById('stage-1').style.display = 'none';
+          document.getElementById('progressContainer').style.display = 'none';
+          document.getElementById('navButtons').style.display = 'none';
+          document.getElementById('stage-0').style.display = 'block';
+          currentStage = 0;
+        } else {
+          goToStage(currentStage - 1);
+        }
+      } else if (dir === 1) {
+        if (validateStage(currentStage)) {
+          if (currentStage === totalStages) {
+            submitFormFinal();
+          } else {
+            goToStage(currentStage + 1);
+          }
+        }
+      }
+    }
+
+    function validateStage(s) {
+      if (s === 1) {
+        const u = document.getElementById('unitName').value;
+        const r = document.getElementById('relawanName').value.trim();
+        const j = document.getElementById('jabatan').value;
+        const t = document.getElementById('tglMasuk').value;
+        let ok = true;
+        document.getElementById('err-unitName').classList.toggle('hidden', !!u); if (!u) ok = false;
+        document.getElementById('err-relawanName').classList.toggle('hidden', !!r); if (!r) ok = false;
+        document.getElementById('err-jabatan').classList.toggle('hidden', !!j); if (!j) ok = false;
+        document.getElementById('err-tglMasuk').classList.toggle('hidden', !!t); if (!t) ok = false;
+        if (ok) { formData.unitName = u; formData.relawanName = r; formData.jabatan = j; formData.tglMasuk = t; }
+        return ok;
+      } else if (s === 2) {
+        const m1 = document.getElementById('m1Murid').value;
+        const m2 = document.getElementById('m2Murid').value;
+        const m3 = document.getElementById('m3Murid').value;
+        if (m1 === "" || m2 === "" || m3 === "" || Number(m1) < 0 || Number(m2) < 0 || Number(m3) < 0) {
+          document.getElementById('err-murid').classList.remove('hidden');
+          return false;
+        }
+        document.getElementById('err-murid').classList.add('hidden');
+        formData.m1Tahun = document.getElementById('m1Tahun').value; formData.m1Bulan = document.getElementById('m1Bulan').value; formData.m1Murid = m1;
+        formData.m2Tahun = document.getElementById('m2Tahun').value; formData.m2Bulan = document.getElementById('m2Bulan').value; formData.m2Murid = m2;
+        formData.m3Tahun = document.getElementById('m3Tahun').value; formData.m3Bulan = document.getElementById('m3Bulan').value; formData.m3Murid = m3;
+        return true;
+      } else if (s === 3) {
+        const rb = document.getElementById('rbSaatIni').value;
+        const ktr = document.getElementById('ktrSaatIni').value;
+        let ok = true;
+        document.getElementById('err-rbSaatIni').classList.toggle('hidden', !!rb); if (!rb) ok = false;
+        document.getElementById('err-ktrSaatIni').classList.toggle('hidden', !!ktr); if (!ktr) ok = false;
+        if (ok) { formData.rbSaatIni = rb; formData.ktrSaatIni = ktr; }
+        return ok;
+      } else if (s === 4) {
+        const prb = document.getElementById('pengajuanRb').value;
+        const pktr = document.getElementById('pengajuanKtr').value;
+        const rek = document.querySelector('input[name="rekomendasi"]:checked');
+        let ok = true;
+        document.getElementById('err-pengajuanRb').classList.toggle('hidden', !!prb); if (!prb) ok = false;
+        document.getElementById('err-pengajuanKtr').classList.toggle('hidden', !!pktr); if (!pktr) ok = false;
+        if (ok) { formData.pengajuanRb = prb; formData.pengajuanKtr = pktr; formData.rekomendasi = rek ? rek.value : "Koornit"; }
+        return ok;
+      }
+      return true;
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+      }[ch]));
+    }
+    function renderReviewData() {
+      const d = Object.fromEntries(Object.entries(formData).map(([k,v]) => [k, escapeHtml(v)]));
+      document.getElementById('reviewContent').innerHTML = `
+        <div class="p-2.5 bg-slate-50 border rounded-xl"><b>Unit:</b> ${d.unitName}</div>
+        <div class="p-2.5 bg-slate-50 border rounded-xl"><b>Relawan:</b> ${d.relawanName} (${d.jabatan}) - Masuk: ${d.tglMasuk}</div>
+        <div class="p-2.5 bg-slate-50 border rounded-xl"><b>Murid 3 Bln:</b> ${d.m1Bulan} ${d.m1Tahun} (${d.m1Murid} MA) | ${d.m2Bulan} ${d.m2Tahun} (${d.m2Murid} MA) | ${d.m3Bulan} ${d.m3Tahun} (${d.m3Murid} MA)</div>
+        <div class="p-2.5 bg-slate-50 border rounded-xl"><b>Status Sekarang:</b> ${d.rbSaatIni} / ${d.ktrSaatIni}</div>
+        <div class="p-2.5 bg-slate-50 border rounded-xl"><b>Pengajuan:</b> ${d.pengajuanRb} / ${d.pengajuanKtr} (Rekomendasi: ${d.rekomendasi})</div>
+      `;
+    }
+
+    function showLoader(show, text="Memproses Data...") {
+      const el = document.getElementById('globalLoader');
+      if (show) {
+        document.getElementById('loadingText').innerText = text;
+        el.classList.remove('hidden');
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+
+    function submitFormFinal() {
+      const btn = document.getElementById('btnNext');
+      btn.disabled = true;
+      showLoader(true, "Mengirim pengajuan KTR...");
+
+      if (typeof google === 'undefined' || !google.script || !google.script.run) {
+        showLoader(false);
+        btn.disabled = false;
+        showSubmissionError("Form harus dibuka melalui URL Web App Apps Script yang aktif.");
+        return;
+      }
+      google.script.run
+          .withSuccessHandler(res => {
+            showLoader(false);
+            if (res && res.success) {
+              showSuccessView(res.submissionId, res.relawanName, res.unitName);
+            } else {
+              btn.disabled = false;
+              showSubmissionError((res && res.error) ? res.error : "Gagal menyimpan pengajuan.");
+            }
+          })
+          .withFailureHandler(err => {
+            showLoader(false);
+            btn.disabled = false;
+            showSubmissionError(err ? (err.message || err.toString()) : "Koneksi terputus.");
+          })
+          .submitPublicPengajuan(formData);
+    }
+
+    function showSubmissionError(msg) {
+      const box = document.getElementById('submissionErrorBox');
+      document.getElementById('submissionErrorText').innerText = msg;
+      box.classList.remove('hidden');
+    }
+
+    function showSuccessView(id, rel, unit) {
+      document.getElementById('questForm').style.display = 'none';
+      document.getElementById('progressContainer').style.display = 'none';
+      document.getElementById('navButtons').style.display = 'none';
+      document.getElementById('submissionIdDisplay').innerText = id;
+      document.getElementById('relawanSuccessDisplay').innerText = `${rel} (${unit})`;
+      document.getElementById('stage-success').style.display = 'block';
+    }
+
+    function resetToNewSubmission() {
+      formData = {
+        unitName: "", relawanName: "", jabatan: "", tglMasuk: "",
+        m1Tahun: "2026", m1Bulan: "Februari", m1Murid: "",
+        m2Tahun: "2026", m2Bulan: "Maret", m2Murid: "",
+        m3Tahun: "2026", m3Bulan: "April", m3Murid: "",
+        rbSaatIni: "", ktrSaatIni: "", pengajuanRb: "", pengajuanKtr: "", rekomendasi: "Koornit"
+      };
+      currentStage = 0;
+      document.getElementById('unitName').value = '';
+      document.getElementById('comboboxSelectedText').innerText = '-- Pilih Nama Unit biMBA --';
+      document.getElementById('comboboxSelectedText').className = 'truncate font-semibold text-slate-400';
+      ['relawanName', 'tglMasuk', 'm1Murid', 'm2Murid', 'm3Murid', 'jabatan', 'rbSaatIni', 'ktrSaatIni', 'pengajuanRb', 'pengajuanKtr'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      document.getElementById('stage-success').style.display = 'none';
+      document.getElementById('questForm').style.display = 'block';
+      document.getElementById('stage-0').style.display = 'block';
+      document.getElementById('btnNext').disabled = false;
+      window.scrollTo(0, 0);
+    }
+  </script>
+</body>
+</html>
