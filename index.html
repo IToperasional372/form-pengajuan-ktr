@@ -27,7 +27,7 @@
     /* Friendly biMBA assistant */
     .ktr-mascot {
       position: fixed; right: 22px; bottom: 22px; z-index: 35;
-      width: 190px; display: flex; flex-direction: column; align-items: center;
+      width: 300px; display: flex; flex-direction: column; align-items: center;
       pointer-events: none;
     }
     .ktr-mascot-bubble {
@@ -43,7 +43,7 @@
       border-bottom:1px solid #f3d27a; transform:rotate(45deg);
     }
     .ktr-mascot-img {
-      width: 150px; height: 190px; object-fit: contain; background: transparent; object-position: bottom;
+      width: 280px; height: 340px; object-fit: contain; background: transparent; object-position: bottom;
       filter: drop-shadow(0 12px 12px rgba(15,23,42,.18));
       animation: ktrFloat 3.4s ease-in-out infinite;
     }
@@ -55,14 +55,14 @@
     .ktr-primary-btn { transition:transform .2s ease, box-shadow .2s ease, filter .2s ease; }
     .ktr-primary-btn:hover { transform:translateY(-2px); box-shadow:0 12px 24px rgba(128,0,0,.22); filter:brightness(1.04); }
     @media (max-width: 900px) {
-      .ktr-mascot { right:10px; bottom:8px; width:120px; opacity:.97; }
-      .ktr-mascot-img { width:86px; height:112px; }
+      .ktr-mascot { right:8px; bottom:4px; width:170px; opacity:.98; }
+      .ktr-mascot-img { width:160px; height:205px; }
       .ktr-mascot-bubble { font-size:9px; padding:7px 8px; border-radius:12px; }
       #navButtons { padding-bottom:90px; }
     }
     @media (max-width: 520px) {
-      .ktr-mascot { width:100px; right:4px; bottom:2px; }
-      .ktr-mascot-img { width:72px; height:92px; }
+      .ktr-mascot { width:125px; right:3px; bottom:2px; }
+      .ktr-mascot-img { width:120px; height:155px; }
       .ktr-mascot-bubble { font-size:8px; max-width:100px; }
     }
 
@@ -133,9 +133,9 @@
           </div>
           
           
-          <div class="flex items-center justify-center gap-3 mb-3">
+          <div class="flex items-center justify-center gap-4 mb-4">
             <img src="/mascot-wave.gif" alt="Asisten biMBA AIUEO"
-                 class="w-24 h-32 sm:w-28 sm:h-36 object-contain bg-transparent drop-shadow-xl"
+                 class="w-36 h-44 sm:w-44 sm:h-52 object-contain bg-transparent drop-shadow-xl"
                  onerror="this.style.display='none'">
             <div class="text-left max-w-xs">
               <p class="text-sm sm:text-base font-extrabold text-slate-800">Halo, Relawan! 👋</p>
