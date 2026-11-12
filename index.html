@@ -127,7 +127,7 @@
 
 
     <!-- MASKOT PENDAMPING FORM -->
-    <aside class="ktr-mascot" aria-live="polite">
+    <aside id="mascotAside" class="ktr-mascot" aria-live="polite" style="display:none;">
       <div class="ktr-mascot-bubble" id="mascotMessage">
         Halo, Relawan! 👋 Yuk lengkapi pengajuan KTR bersama saya.
       </div>
@@ -723,6 +723,8 @@
         if (el) el.style.display = 'none';
       }
       currentStage = num;
+      const mascotAside = document.getElementById('mascotAside');
+      if (mascotAside) mascotAside.style.display = currentStage >= 1 ? 'flex' : 'none';
       const target = document.getElementById(`stage-${currentStage}`);
       if (target) target.style.display = 'block';
 
@@ -785,6 +787,8 @@
           document.getElementById('navButtons').style.display = 'none';
           document.getElementById('stage-0').style.display = 'block';
           currentStage = 0;
+          const mascotAside = document.getElementById('mascotAside');
+          if (mascotAside) mascotAside.style.display = 'none';
         } else {
           goToStage(currentStage - 1);
         }
@@ -908,6 +912,8 @@
       document.getElementById('submissionIdDisplay').innerText = id;
       document.getElementById('relawanSuccessDisplay').innerText = `${rel} (${unit})`;
       document.getElementById('stage-success').style.display = 'block';
+      const mascotAside = document.getElementById('mascotAside');
+      if (mascotAside) mascotAside.style.display = 'flex';
       updateMascotMessage('success');
     }
 
