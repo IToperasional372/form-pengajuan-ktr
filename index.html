@@ -612,55 +612,10 @@
       }
     }
 
-    // Audio sambutan: autoplay dicoba sekali saat halaman awal dibuka.
-    // Jika browser memblokir autoplay, pengguna dapat menekan ikon speaker satu kali.
-    // Sambutan tidak pernah diputar ulang saat tombol Mulai atau saat berpindah tahap.
+    // Audio hanya untuk navigasi tahap dan keberhasilan pengajuan.
+    // Suara salam pembuka maskot sengaja dihilangkan.
     let ktrAudioContext = null;
     let ktrSoundEnabled = true;
-    let ktrWelcomeSpoken = false;
-    let ktrWelcomeAttempted = false;
-    let ktrWelcomeUtterance = null;
-    const KTR_WELCOME_TEXT = 'Selamat datang, Relawan biMBA. Tetap semangat dan terus belajar!';
-
-    function playKtrWelcome(isUserGesture = false) {
-      if (ktrWelcomeSpoken || !('speechSynthesis' in window)) return false;
-
-      // Autoplay dibatasi browser. Percobaan dari load boleh gagal; klik speaker
-      // menjadi fallback eksplisit yang tetap hanya berlaku di halaman awal.
-      if (ktrWelcomeAttempted && !isUserGesture) return false;
-      if (!isUserGesture) ktrWelcomeAttempted = true;
-
-      try {
-        window.speechSynthesis.cancel();
-        ktrWelcomeUtterance = new SpeechSynthesisUtterance(KTR_WELCOME_TEXT);
-        ktrWelcomeUtterance.lang = 'id-ID';
-        ktrWelcomeUtterance.rate = 0.92;
-        ktrWelcomeUtterance.pitch = 1.08;
-        ktrWelcomeUtterance.volume = 1;
-        ktrWelcomeUtterance.onstart = () => { ktrWelcomeSpoken = true; };
-        ktrWelcomeUtterance.onerror = (event) => {
-          console.warn('Suara sambutan gagal diputar:', event.error);
-        };
-        window.speechSynthesis.speak(ktrWelcomeUtterance);
-        return true;
-      } catch (err) {
-        console.warn('Suara sambutan tidak dapat diputar:', err);
-        return false;
-      }
-    }
-
-    function speakKtrWelcomeOnPageOpen() {
-      if (ktrWelcomeAttempted || ktrWelcomeSpoken) return;
-      playKtrWelcome(false);
-    }
-
-    if (document.readyState === 'complete') {
-      window.setTimeout(speakKtrWelcomeOnPageOpen, 500);
-    } else {
-      window.addEventListener('load', () => {
-        window.setTimeout(speakKtrWelcomeOnPageOpen, 500);
-      }, { once: true });
-    }
 
     function getKtrAudioContext() {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -712,35 +667,20 @@
       const button = document.getElementById('soundToggle');
       const icon = document.getElementById('soundToggleIcon');
 
-      // Jika autoplay diblokir, klik speaker di halaman awal memulai sambutan.
-      // Ini tidak mengaitkan suara sambutan dengan tombol Mulai atau Tahap 1.
-      const onLanding = document.getElementById('stage-0') &&
-        document.getElementById('stage-0').style.display !== 'none';
-
-      if (onLanding && !ktrWelcomeSpoken) {
-        ktrSoundEnabled = true;
-        playKtrWelcome(true);
-        if (button) {
-          button.setAttribute('aria-pressed', 'true');
-          button.setAttribute('aria-label', 'Suara aktif');
-          button.title = 'Sambutan diputar satu kali';
-        }
-        if (icon) icon.className = 'fa-solid fa-volume-high text-sm';
-        return;
-      }
-
       ktrSoundEnabled = !ktrSoundEnabled;
       if (button) {
         button.setAttribute('aria-pressed', String(ktrSoundEnabled));
         button.setAttribute('aria-label', ktrSoundEnabled ? 'Matikan suara' : 'Aktifkan suara');
-        button.title = ktrSoundEnabled ? 'Suara aktif — klik untuk mematikan' : 'Suara mati — klik untuk mengaktifkan';
+        button.title = ktrSoundEnabled
+          ? 'Suara aktif — klik untuk mematikan'
+          : 'Suara mati — klik untuk mengaktifkan';
       }
-      if (icon) icon.className = ktrSoundEnabled ? 'fa-solid fa-volume-high text-sm' : 'fa-solid fa-volume-xmark text-sm';
-      if (!ktrSoundEnabled && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      } else if (ktrSoundEnabled) {
-        playNextStepSound();
+      if (icon) {
+        icon.className = ktrSoundEnabled
+          ? 'fa-solid fa-volume-high text-sm'
+          : 'fa-solid fa-volume-xmark text-sm';
       }
+      if (ktrSoundEnabled) playNextStepSound();
     }
 
     function startQuest() {
