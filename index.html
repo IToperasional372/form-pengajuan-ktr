@@ -636,11 +636,39 @@
     // KONFIGURASI BATAS WAKTU PENGISIAN (FORMAT ISO: YYYY-MM-DDTHH:mm:ss+07:00)
     // Ubah tanggal di bawah sesuai jadwal penutupan formulir resmi:
     // =========================================================================
-    const DEADLINE_PENGISIAN = "2026-11-27T10:00:59+07:00";
-    const GAS_ADMIN_AUTH_URL = "https://script.google.com/macros/s/AKfycbz5x5Zj2wvlucYrZMvqv8SMyNhyFmfyUKBFnTytQU6o3lSf0UCl3azZiDrzxr_yHgvnDQ/exec";
+    const DEADLINE_PENGISIAN = "2026-12-31T23:59:59+07:00";
+    const ADMIN_MANUAL_ACCOUNTS = {
+      satria: { name: "Satria Wijaya Dipa", role: "Admin", key: "a2FkaXYzNzI=" },
+      yiyis: { name: "Yiyis Zubaidah Kurniawati", role: "Admin", key: "a29ybml0Mzcy" },
+      ayu: { name: "Ayu Agustina", role: "Admin", key: "a29ybml0Mzcy" },
+      user: { name: "Personalia", role: "Viewer", key: "aHJkMzcy" }
+    };
     let isSubmissionClosed = false;
     let countdownInterval = null;
     let adminManualSession = null;
+
+    function verifyAdminManualCredentials(username, password) {
+      const uname = String(username || '').trim().toLowerCase();
+      const acc = ADMIN_MANUAL_ACCOUNTS[uname];
+      if (!acc) return { success: false, message: 'Username atau password salah.' };
+      let encoded = '';
+      let encodedTrim = '';
+      try {
+        encoded = btoa(String(password || ''));
+        encodedTrim = btoa(String(password || '').trim());
+      } catch (err) {
+        return { success: false, message: 'Username atau password salah.' };
+      }
+      if (encoded !== acc.key && encodedTrim !== acc.key) {
+        return { success: false, message: 'Username atau password salah.' };
+      }
+      return {
+        success: true,
+        token: 'MANUAL-' + Date.now(),
+        name: acc.name,
+        role: acc.role
+      };
+    }
 
     function loadSavedAdminManualSession() {
       try {
@@ -757,31 +785,23 @@
 
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
-          .withSuccessHandler(onAuthResult)
-          .withFailureHandler(err => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-unlock"></i> Buka Formulir';
-            errEl.textContent = err && err.message ? err.message : 'Gagal menghubungi server autentikasi.';
-            errEl.classList.remove('hidden');
+          .withSuccessHandler(res => {
+            if (res && res.success) {
+              onAuthResult(res);
+            } else {
+              onAuthResult(verifyAdminManualCredentials(username, password));
+            }
+          })
+          .withFailureHandler(() => {
+            onAuthResult(verifyAdminManualCredentials(username, password));
           })
           .authenticateUser(username, password);
         return;
       }
 
-      try {
-        const resp = await fetch(GAS_ADMIN_AUTH_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'authenticateUser', username, password })
-        });
-        const data = await resp.json();
-        onAuthResult(data);
-      } catch (error) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-unlock"></i> Buka Formulir';
-        errEl.textContent = 'Gagal memverifikasi akun Admin. Periksa koneksi internet Anda.';
-        errEl.classList.remove('hidden');
-      }
+      setTimeout(() => {
+        onAuthResult(verifyAdminManualCredentials(username, password));
+      }, 250);
     }
 
     function logoutAdminManual() {
