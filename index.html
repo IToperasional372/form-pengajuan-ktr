@@ -164,6 +164,17 @@
             <div id="countdownExpiredNotice" class="hidden py-2 px-3 bg-red-600 text-white rounded-xl text-xs font-bold">
               ⛔ Masa pengisian pengajuan KTR periode ini telah ditutup.
             </div>
+
+            <!-- Banner aktif ketika Admin membuka kunci input manual -->
+            <div id="adminBypassActiveBanner" class="hidden mt-2.5 py-2 px-3 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-[11px] flex flex-wrap items-center justify-between gap-2">
+              <span class="font-bold flex items-center gap-1.5">
+                <i class="fa-solid fa-unlock-keyhole text-emerald-600"></i>
+                Mode Input Manual Admin: <strong id="adminBypassName" class="underline">-</strong>
+              </span>
+              <button type="button" onclick="logoutAdminManual()" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold rounded-lg text-[10px] transition cursor-pointer">
+                Keluar Mode Admin
+              </button>
+            </div>
           </div>
 
           <div class="flex justify-center mb-4">
@@ -204,6 +215,14 @@
           <button id="btnStartQuest" type="button" class="ktr-primary-btn w-full py-4 bg-gradient-to-r from-[#800000] to-[#5a0000] text-white font-extrabold text-base sm:text-lg rounded-2xl shadow-xl hover:opacity-95 active:scale-95 transition-all border-2 border-amber-400 cursor-pointer">
             🚀 MULAI PENGAJUAN KTR
           </button>
+
+          <!-- Tombol Akses Input Manual Admin (Muncul otomatis saat batas waktu berakhir) -->
+          <div id="adminManualTriggerWrap" class="hidden mt-4 pt-3 border-t border-slate-200/80">
+            <button type="button" onclick="openAdminManualModal()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-[#800000] border border-slate-300 hover:border-amber-400 text-xs font-bold transition cursor-pointer shadow-sm">
+              <i class="fa-solid fa-user-shield text-[#800000]"></i>
+              Input Manual Khusus Admin
+            </button>
+          </div>
         </div>
       </section>
 
@@ -501,6 +520,61 @@
     </main>
   </div>
 
+  <!-- MODAL LOGIN ADMIN UNTUK INPUT MANUAL -->
+  <div id="adminManualModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[140] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border-t-8 border-[#800000] animate-[ktrStageIn_.25s_ease_both]">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-amber-100 text-[#800000] flex items-center justify-center text-lg">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-black text-slate-800 leading-tight">Akses Input Manual</h3>
+              <p class="text-[11px] text-slate-500 font-medium">Khusus Admin KTR (Kadiv / Koornit)</p>
+            </div>
+          </div>
+          <button type="button" onclick="closeAdminManualModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-red-50 text-slate-500 hover:text-red-600 flex items-center justify-center transition cursor-pointer">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-600 bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4 leading-relaxed">
+          Masukkan akun <b>Admin Portal KTR</b> untuk membuka kunci formulir dan menginput pengajuan susulan.
+        </p>
+
+        <form onsubmit="handleAdminManualLogin(event)" class="space-y-3">
+          <div>
+            <label for="adminManualUser" class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Username Admin</label>
+            <input type="text" id="adminManualUser" required autocomplete="username" placeholder="Masukkan username admin..."
+              class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#800000]">
+          </div>
+          <div>
+            <label for="adminManualPass" class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Password</label>
+            <div class="relative">
+              <input type="password" id="adminManualPass" required autocomplete="current-password" placeholder="Masukkan password..."
+                class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-[#800000]">
+              <button type="button" onclick="toggleAdminPassVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs cursor-pointer">
+                <i id="adminPassEyeIcon" class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="adminManualError" class="hidden p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold"></div>
+
+          <div class="flex gap-2.5 pt-2">
+            <button type="button" onclick="closeAdminManualModal()" class="w-1/3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">
+              Batal
+            </button>
+            <button type="submit" id="btnSubmitAdminManual" class="w-2/3 py-2.5 bg-[#800000] hover:bg-[#5a0000] text-white font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-unlock"></i> Buka Formulir
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- GLOBAL LOADER -->
   <div id="globalLoader" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[150] flex flex-col items-center justify-center hidden">
     <div class="loader"></div>
@@ -563,8 +637,159 @@
     // Ubah tanggal di bawah sesuai jadwal penutupan formulir resmi:
     // =========================================================================
     const DEADLINE_PENGISIAN = "2026-12-31T23:59:59+07:00";
+    const GAS_ADMIN_AUTH_URL = "https://script.google.com/macros/s/AKfycbz5x5Zj2wvlucYrZMvqv8SMyNhyFmfyUKBFnTytQU6o3lSf0UCl3azZiDrzxr_yHgvnDQ/exec";
     let isSubmissionClosed = false;
     let countdownInterval = null;
+    let adminManualSession = null;
+
+    function loadSavedAdminManualSession() {
+      try {
+        const raw = sessionStorage.getItem('ktr_admin_manual_session');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.role === 'Admin' && parsed.name) {
+            adminManualSession = parsed;
+          }
+        }
+      } catch (e) {
+        adminManualSession = null;
+      }
+    }
+
+    function applySubmissionLockState() {
+      const startBtn = document.getElementById('btnStartQuest');
+      const triggerWrap = document.getElementById('adminManualTriggerWrap');
+      const activeBanner = document.getElementById('adminBypassActiveBanner');
+      const adminNameEl = document.getElementById('adminBypassName');
+
+      if (!isSubmissionClosed) {
+        triggerWrap?.classList.add('hidden');
+        activeBanner?.classList.add('hidden');
+        if (startBtn) {
+          startBtn.disabled = false;
+          startBtn.innerHTML = '🚀 MULAI PENGAJUAN KTR';
+          startBtn.className = 'ktr-primary-btn w-full py-4 bg-gradient-to-r from-[#800000] to-[#5a0000] text-white font-extrabold text-base sm:text-lg rounded-2xl shadow-xl hover:opacity-95 active:scale-95 transition-all border-2 border-amber-400 cursor-pointer';
+        }
+        return;
+      }
+
+      if (adminManualSession) {
+        triggerWrap?.classList.add('hidden');
+        activeBanner?.classList.remove('hidden');
+        if (adminNameEl) adminNameEl.textContent = adminManualSession.name;
+        if (startBtn) {
+          startBtn.disabled = false;
+          startBtn.innerHTML = '🛠️ INPUT MANUAL PENGAJUAN KTR (ADMIN)';
+          startBtn.className = 'ktr-primary-btn w-full py-4 bg-gradient-to-r from-emerald-700 to-emerald-900 text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-xl hover:opacity-95 active:scale-95 transition-all border-2 border-amber-300 cursor-pointer';
+        }
+      } else {
+        activeBanner?.classList.add('hidden');
+        triggerWrap?.classList.remove('hidden');
+        if (startBtn) {
+          startBtn.disabled = true;
+          startBtn.innerHTML = '🔒 WAKTU PENGISIAN TELAH BERAKHIR';
+          startBtn.className = 'w-full py-4 bg-slate-300 text-slate-500 font-extrabold text-sm sm:text-base rounded-2xl border-2 border-slate-300 cursor-not-allowed';
+        }
+      }
+    }
+
+    function openAdminManualModal() {
+      const modal = document.getElementById('adminManualModal');
+      const errEl = document.getElementById('adminManualError');
+      if (errEl) errEl.classList.add('hidden');
+      document.getElementById('adminManualUser').value = '';
+      document.getElementById('adminManualPass').value = '';
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => document.getElementById('adminManualUser')?.focus(), 80);
+    }
+
+    function closeAdminManualModal() {
+      const modal = document.getElementById('adminManualModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function toggleAdminPassVisibility() {
+      const input = document.getElementById('adminManualPass');
+      const icon = document.getElementById('adminPassEyeIcon');
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        if (icon) icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        input.type = 'password';
+        if (icon) icon.className = 'fa-solid fa-eye';
+      }
+    }
+
+    async function handleAdminManualLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('adminManualUser').value.trim();
+      const password = document.getElementById('adminManualPass').value;
+      const errEl = document.getElementById('adminManualError');
+      const btn = document.getElementById('btnSubmitAdminManual');
+
+      errEl.classList.add('hidden');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memverifikasi...';
+
+      const onAuthResult = (res) => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-unlock"></i> Buka Formulir';
+
+        if (!res || !res.success) {
+          errEl.textContent = (res && res.message) ? res.message : 'Username atau password salah.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+        if (res.role !== 'Admin') {
+          errEl.textContent = 'Akses ditolak. Hanya akun berstatus Admin yang dapat melakukan input manual.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        adminManualSession = { token: res.token || '', name: res.name, role: res.role };
+        sessionStorage.setItem('ktr_admin_manual_session', JSON.stringify(adminManualSession));
+        closeAdminManualModal();
+        applySubmissionLockState();
+      };
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(onAuthResult)
+          .withFailureHandler(err => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-unlock"></i> Buka Formulir';
+            errEl.textContent = err && err.message ? err.message : 'Gagal menghubungi server autentikasi.';
+            errEl.classList.remove('hidden');
+          })
+          .authenticateUser(username, password);
+        return;
+      }
+
+      try {
+        const resp = await fetch(GAS_ADMIN_AUTH_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'authenticateUser', username, password })
+        });
+        const data = await resp.json();
+        onAuthResult(data);
+      } catch (error) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-unlock"></i> Buka Formulir';
+        errEl.textContent = 'Gagal memverifikasi akun Admin. Periksa koneksi internet Anda.';
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    function logoutAdminManual() {
+      adminManualSession = null;
+      sessionStorage.removeItem('ktr_admin_manual_session');
+      resetToNewSubmission();
+      applySubmissionLockState();
+    }
 
     function initDeadlineCountdown() {
       const targetDate = new Date(DEADLINE_PENGISIAN);
@@ -588,13 +813,7 @@
           isSubmissionClosed = true;
           document.getElementById('countdownTimerGrid')?.classList.add('hidden');
           document.getElementById('countdownExpiredNotice')?.classList.remove('hidden');
-
-          const startBtn = document.getElementById('btnStartQuest');
-          if (startBtn) {
-            startBtn.disabled = true;
-            startBtn.innerHTML = '🔒 WAKTU PENGISIAN TELAH BERAKHIR';
-            startBtn.className = 'w-full py-4 bg-slate-300 text-slate-500 font-extrabold text-sm sm:text-base rounded-2xl border-2 border-slate-300 cursor-not-allowed';
-          }
+          applySubmissionLockState();
           return;
         }
 
@@ -620,6 +839,7 @@
     }
 
     window.onload = function() {
+      loadSavedAdminManualSession();
       initDeadlineCountdown();
       populateKtrSelects();
       initSearchableCombobox();
@@ -811,7 +1031,7 @@
     }
 
     function startQuest() {
-      if (isSubmissionClosed) return;
+      if (isSubmissionClosed && !adminManualSession) return;
       document.getElementById('stage-0').style.display = 'none';
       document.getElementById('progressContainer').style.display = 'block';
       document.getElementById('navButtons').style.display = 'flex';
@@ -979,10 +1199,16 @@
     }
 
     async function submitFormFinal() {
-      if (isSubmissionClosed) {
+      if (isSubmissionClosed && !adminManualSession) {
         showSubmissionError("Batas waktu pengisian telah berakhir.");
         return;
       }
+
+      const payload = {
+        ...formData,
+        adminManualToken: adminManualSession ? adminManualSession.token : "",
+        adminManualBy: adminManualSession ? adminManualSession.name : ""
+      };
 
       const btn = document.getElementById('btnNext');
       btn.disabled = true;
@@ -1004,7 +1230,7 @@
             btn.disabled = false;
             showSubmissionError(err ? (err.message || err.toString()) : "Koneksi terputus.");
           })
-          .submitPublicPengajuan(formData);
+          .submitPublicPengajuan(payload);
         return;
       }
 
@@ -1012,7 +1238,7 @@
         const response = await fetch('/api/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(formData)
+          body: JSON.stringify(payload)
         });
         const result = await response.json();
         showLoader(false);
@@ -1093,6 +1319,7 @@
       document.getElementById('btnNext').disabled = false;
       const mascotAside = document.getElementById('mascotAside');
       if (mascotAside) mascotAside.style.display = 'none';
+      applySubmissionLockState();
       window.scrollTo(0, 0);
     }
   </script>
